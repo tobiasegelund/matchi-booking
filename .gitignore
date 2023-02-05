@@ -1,1 +1,5 @@
 venv/
+.env
+.DS_Store
+TEST.ipynb
+chromedriver
