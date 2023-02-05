@@ -19,6 +19,7 @@ PASSWORD = os.getenv("MATCHI_PASSWROD")
 SPORT = "5"  # Padel
 URL_LOGIN = "https://www.matchi.se/login"
 URL_TEMPLATE = "https://www.matchi.se/facilities/S%C3%B8nders%C3%B8HallernesPadelcenter?date={date}&sport={sport}"
+NUMBER_OF_RETRIES = 3
 flag = False
 # CENTER = "Nordfyns Padel Center"
 
@@ -121,24 +122,22 @@ def book() -> None:
 
 
 def main():
-    login()
-    retries = 3
-
-    for i in range(retries):
+    for i in range(NUMBER_OF_RETRIES):
         try:
             book()
             break  # Break the retry loop
         except Exception:
-            print(f"... Failed {i + 1} / {retries}. Retries...")
+            print(f"... Failed {i + 1} / {NUMBER_OF_RETRIES}. Retries...")
             continue
 
 
 if "__main__" == __name__:
+    login()
     main()
 
     # TODO: Outcomment
     # schedule.every().day.at("23:59").do(login)
-    # schedule.every().day.at("00:00").do(book)
+    # schedule.every().day.at("00:00").do(main)
 
     # while True:
     #     schedule.run_pending()
