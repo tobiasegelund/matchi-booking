@@ -121,7 +121,7 @@ def book() -> None:
         print("... Booked")
 
 
-def main():
+def retry():
     for i in range(NUMBER_OF_RETRIES):
         try:
             book()
@@ -133,11 +133,11 @@ def main():
 
 if "__main__" == __name__:
     login()
-    main()
+    retry()
 
     # TODO: Outcomment
     # schedule.every().day.at("23:59").do(login)
-    # schedule.every().day.at("00:00").do(main)
+    # schedule.every().day.at("00:00").do(retry)
 
     # while True:
     #     schedule.run_pending()
