@@ -23,3 +23,5 @@ COPY main.py requirements.txt .env .
 
 RUN pip install pip -U \
 	&& pip install -r requirements.txt --no-cache
+	
+CMD [ "python3", "main.py" ]
