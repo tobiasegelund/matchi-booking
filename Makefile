@@ -5,7 +5,7 @@ it:
 		docker run -it --rm matchi bash
 
 run:
-		docker run --rm matchi main.py
+		docker run --rm matchi
 
 script:
 		python3 main.py
