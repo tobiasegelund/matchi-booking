@@ -20,7 +20,6 @@ SPORT = "5"  # Padel
 URL_LOGIN = "https://www.matchi.se/login"
 URL_TEMPLATE = "https://www.matchi.se/facilities/S%C3%B8nders%C3%B8HallernesPadelcenter?date={date}&sport={sport}"
 NUMBER_OF_RETRIES = 3
-flag = False
 # CENTER = "Nordfyns Padel Center"
 
 chrome_options = webdriver.ChromeOptions()
@@ -46,7 +45,20 @@ def find_next_future_thursday() -> str:
             return "2023-02-18"  # TODO: REMOVE
     raise ValueError("Couldn't find a future Thursday. Please contact Tobias")
 
+def retry(func):
+    def inner():
+        for i in range(NUMBER_OF_RETRIES):
+            try:
+                flag = func()
+                break  # Break the retry loop
+            except Exception:
+                print(f"... Failed {i + 1} / {NUMBER_OF_RETRIES}. Retries...")
+                continue
 
+        return flag
+    return inner
+
+@retry
 def login() -> None:
     driver.get(URL_LOGIN)
     print(f"... Opened {URL_LOGIN}")
@@ -68,7 +80,6 @@ def login() -> None:
     )
     login_box.click()
     print(f"... Logged in as {USERNAME}")
-    # Flag to break loop
 
 
 # def book_court1() -> None:
@@ -89,7 +100,7 @@ def book_court2() -> None:
         court_hour_box = driver.find_element(By.XPATH, court_hour)
         court_hour_box.click()
 
-
+@retry
 def book() -> None:
     date = find_next_future_thursday()
     print(f"... Book hours on {date}")
@@ -113,34 +124,27 @@ def book() -> None:
     book_box.click()
 
     confirm_box = driver.find_element(By.XPATH, '//*[@id="btnSubmit"]')
-    confirm_box.click()
+    # confirm_box.click()
 
     page_state = driver.execute_script("return document.readyState;")
     if page_state == "complete":
-        flag = True
         print("... Booked")
-
-
-def retry():
-    for i in range(NUMBER_OF_RETRIES):
-        try:
-            book()
-            break  # Break the retry loop
-        except Exception:
-            print(f"... Failed {i + 1} / {NUMBER_OF_RETRIES}. Retries...")
-            continue
+        return True
+    return False
 
 
 if "__main__" == __name__:
-    login()
-    retry()
-
     # TODO: Outcomment
-    # schedule.every().day.at("23:59").do(login)
-    # schedule.every().day.at("00:00").do(retry)
+    # schedule.every().day.at("19:40").do(login)
+    # schedule.every().day.at("19:41").do(book)
+    # schedule.every().day.at("23:59").do(retry(login))
+    # schedule.every().day.at("00:00").do(retry(book))
 
-    # while True:
-    #     schedule.run_pending()
-    #     if flag:
-    #       break
-    #     sleep(0.5)
+    while True:
+        login()
+        flag = book()
+
+        schedule.run_pending()
+        if flag:
+            break
+        sleep(0.5)
