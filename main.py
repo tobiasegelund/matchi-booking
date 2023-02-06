@@ -124,7 +124,7 @@ def book() -> None:
     book_box.click()
 
     confirm_box = driver.find_element(By.XPATH, '//*[@id="btnSubmit"]')
-    # confirm_box.click()
+    confirm_box.click()
 
     page_state = driver.execute_script("return document.readyState;")
     if page_state == "complete":
