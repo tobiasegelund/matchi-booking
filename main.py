@@ -107,7 +107,6 @@ def book_court2() -> None:
 @retry
 def book() -> None:
     date = find_next_future_thursday()
-    print(f"... Book hours on {date}")
     url = URL_TEMPLATE.format(date=date, sport=SPORT)
 
     driver.get(url)
@@ -144,6 +143,9 @@ if "__main__" == __name__:
     # book()
     # schedule.every().day.at("20:50").do(login)
     # schedule.every().day.at("20:51").do(book)
+    date = find_next_future_thursday()
+    print(f"... Book hours on {date}")
+
     schedule.every().day.at("23:59").do(retry(login))
     schedule.every().day.at("00:00").do(retry(book))
 
