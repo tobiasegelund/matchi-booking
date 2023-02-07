@@ -43,7 +43,7 @@ def find_next_future_thursday() -> str:
         date = future_date + datetime.timedelta(days=i)
         if date.isoweekday() == 4:
             # return date.strftime("%Y-%m-%d")
-            return "2023-02-18"  # TODO: REMOVE
+            return "2023-02-22"  # TODO: REMOVE
     raise ValueError("Couldn't find a future Thursday. Please contact Tobias")
 
 
@@ -143,10 +143,10 @@ if "__main__" == __name__:
     # TODO: Outcomment
     # login()
     # book()
-    schedule.every().day.at("20:50").do(login)
-    schedule.every().day.at("20:51").do(book)
-    # schedule.every().day.at("23:59").do(retry(login))
-    # schedule.every().day.at("00:00").do(retry(book))
+    # schedule.every().day.at("20:50").do(login)
+    # schedule.every().day.at("20:51").do(book)
+    schedule.every().day.at("23:59").do(retry(login))
+    schedule.every().day.at("00:00").do(retry(book))
 
     while True:
         schedule.run_pending()
