@@ -135,11 +135,14 @@ def book() -> None:
     if page_state == "complete":
         print("... Booked")
 
+    sleep(20)
     sys.exit()
 
 
 if "__main__" == __name__:
     # TODO: Outcomment
+    # login()
+    # book()
     schedule.every().day.at("20:50").do(login)
     schedule.every().day.at("20:51").do(book)
     # schedule.every().day.at("23:59").do(retry(login))
