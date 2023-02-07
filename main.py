@@ -1,4 +1,5 @@
 import os
+import sys
 import datetime
 from time import sleep
 
@@ -45,6 +46,7 @@ def find_next_future_thursday() -> str:
             return "2023-02-18"  # TODO: REMOVE
     raise ValueError("Couldn't find a future Thursday. Please contact Tobias")
 
+
 def retry(func):
     def inner():
         for i in range(NUMBER_OF_RETRIES):
@@ -56,7 +58,9 @@ def retry(func):
                 continue
 
         return flag
+
     return inner
+
 
 @retry
 def login() -> None:
@@ -100,6 +104,7 @@ def book_court2() -> None:
         court_hour_box = driver.find_element(By.XPATH, court_hour)
         court_hour_box.click()
 
+
 @retry
 def book() -> None:
     date = find_next_future_thursday()
@@ -129,22 +134,17 @@ def book() -> None:
     page_state = driver.execute_script("return document.readyState;")
     if page_state == "complete":
         print("... Booked")
-        return True
-    return False
+
+    sys.exit()
 
 
 if "__main__" == __name__:
     # TODO: Outcomment
-    # schedule.every().day.at("19:40").do(login)
-    # schedule.every().day.at("19:41").do(book)
+    schedule.every().day.at("20:50").do(login)
+    schedule.every().day.at("20:51").do(book)
     # schedule.every().day.at("23:59").do(retry(login))
     # schedule.every().day.at("00:00").do(retry(book))
 
     while True:
-        login()
-        flag = book()
-
         schedule.run_pending()
-        if flag:
-            break
         sleep(0.5)
