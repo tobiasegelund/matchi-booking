@@ -29,7 +29,7 @@ chrome_options.add_argument("--no-sandbox")
 chrome_options.add_argument("--window-size=1920,1080")  # Ensure no mobile version
 chrome_options.add_argument("--disable-dev-shm-usage")
 driver = webdriver.Chrome(options=chrome_options)
-
+driver.implicitly_wait(10)  # 10 seconds upper limit for page to load relevant elements
 # set xvfb display since there is no GUI in docker container.
 # display = Display(visible=0, size=(800, 600))
 # display.start()
@@ -51,13 +51,15 @@ def retry(func):
     def inner():
         for i in range(NUMBER_OF_RETRIES):
             try:
-                flag = func()
+                func()
                 break  # Break the retry loop
-            except Exception:
-                print(f"... Failed {i + 1} / {NUMBER_OF_RETRIES}. Retries...")
+            except Exception as e:
+                if i == NUMBER_OF_RETRIES - 1:
+                    sys.exit()
+                print(
+                    f"... Failed due to: {e}\n... Retry {i + 1} / {NUMBER_OF_RETRIES - 1}."
+                )
                 continue
-
-        return flag
 
     return inner
 
@@ -66,9 +68,6 @@ def retry(func):
 def login() -> None:
     driver.get(URL_LOGIN)
     print(f"... Opened {URL_LOGIN}")
-    driver.implicitly_wait(
-        20
-    )  # 20 seconds upper limit for page to load relevant elements
 
     cookie_box = driver.find_element(By.XPATH, '//*[@id="cookiescript_accept"]')
     cookie_box.click()
@@ -117,6 +116,7 @@ def book() -> None:
         "/html/body/div[1]/div[3]/section[2]/div[2]/div/div[1]/div[2]/div/div/div[1]/div[2]/div[2]/a",
     )
     multi_reserve_box.click()
+    driver.save_screenshot(f"screenshots/{str(datetime.datetime.now())}.png")
 
     book_court2()
 
