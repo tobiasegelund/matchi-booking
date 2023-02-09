@@ -51,7 +51,7 @@ def retry(func):
     def inner():
         for i in range(NUMBER_OF_RETRIES):
             try:
-                func()
+                func(i)
                 break  # Break the retry loop
             except Exception as e:
                 if i == NUMBER_OF_RETRIES - 1:
@@ -65,7 +65,7 @@ def retry(func):
 
 
 @retry
-def login() -> None:
+def login(*args) -> None:
     driver.get(URL_LOGIN)
     print(f"... Opened {URL_LOGIN}")
 
@@ -104,7 +104,7 @@ def book_court2() -> None:
 
 
 @retry
-def book() -> None:
+def book(i: int, *args) -> None:
     date = find_next_future_thursday()
     url = URL_TEMPLATE.format(date=date, sport=SPORT)
 
@@ -116,15 +116,21 @@ def book() -> None:
         "/html/body/div[1]/div[3]/section[2]/div[2]/div/div[1]/div[2]/div/div/div[1]/div[2]/div[2]/a",
     )
     multi_reserve_box.click()
-    driver.save_screenshot(f"screenshots/{str(datetime.datetime.now())}.png")
+    driver.save_screenshot(f"screenshots/{str(i)}.{str(datetime.datetime.now())}.png")
 
+    sleep(i * 3)
     book_court2()
+    # View selected timeslots 
+    driver.save_screenshot(f"screenshots/{str(i)}.{str(datetime.datetime.now())}.png")
 
     book_box = driver.find_element(
         By.XPATH,
         "/html/body/div[1]/div[3]/section[2]/div[2]/div/div[1]/div[2]/div/div/div[1]/div[2]/div[2]/div/a[1]",
     )
     book_box.click()
+    # Observe the pop-up box
+    sleep(i * 3)
+    driver.save_screenshot(f"screenshots/{str(i)}.{str(datetime.datetime.now())}.png")
 
     confirm_box = driver.find_element(By.XPATH, '//*[@id="btnSubmit"]')
     confirm_box.click()
@@ -133,7 +139,8 @@ def book() -> None:
     if page_state == "complete":
         print("... Trying to book. Please verify when done")
 
-    sleep(20)
+    sleep(30)
+    driver.save_screenshot(f"screenshots/{str(i)}.{str(datetime.datetime.now())}.png")
     sys.exit()
 
 
