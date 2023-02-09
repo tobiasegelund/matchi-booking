@@ -1,1 +1,1 @@
-Empty folder to store screenshots
+Placeholder for screenshots

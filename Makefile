@@ -13,5 +13,5 @@ script:
 tar:
 		tar -czf matchi.tar.gz Dockerfile main.py requirements.txt README.md .env
 
-screenshots:
+tar-screenshots:
 		tar -czf screenshots.tar.gz screenshots/
