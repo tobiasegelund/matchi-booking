@@ -38,8 +38,8 @@ def find_next_future_thursday() -> str:
     for i in range(7):
         date = future_date + datetime.timedelta(days=i)
         if date.isoweekday() == 4:
-            return date.strftime("%Y-%m-%d")
-            # return "2023-02-22"  # TODO: REMOVE
+            # return date.strftime("%Y-%m-%d")
+            return "2023-02-24"  # TODO: REMOVE
     raise ValueError("Couldn't find a future Thursday. Please contact Tobias")
 
 
@@ -81,13 +81,13 @@ def login(*args) -> None:
     print(f"... Logged in as {USERNAME}")
 
 
-# def book_court1() -> None:
-#     court1_18_19 = "/html/body/div[1]/div[3]/section[2]/div[2]/div/div[1]/div[2]/div/div/div[2]/table/tbody/tr[2]/td[2]/table/tbody/tr/td[13]"
-#     court1_19_20 = "/html/body/div[1]/div[3]/section[2]/div[2]/div/div[1]/div[2]/div/div/div[2]/table/tbody/tr[2]/td[2]/table/tbody/tr/td[14]"
+def book_court1() -> None:
+    court1_18_19 = "/html/body/div[1]/div[3]/section[2]/div[2]/div/div[1]/div[2]/div/div/div[2]/table/tbody/tr[2]/td[2]/table/tbody/tr/td[13]"
+    court1_19_20 = "/html/body/div[1]/div[3]/section[2]/div[2]/div/div[1]/div[2]/div/div/div[2]/table/tbody/tr[2]/td[2]/table/tbody/tr/td[14]"
 
-#     for court_hour in [court1_18_19, court1_19_20]:
-#         court_hour_box = driver.find_element(By.XPATH, court_hour)
-#         court_hour_box.click()
+    for court_hour in [court1_19_20]:
+        court_hour_box = driver.find_element(By.XPATH, court_hour)
+        court_hour_box.click()
 
 
 def book_court2() -> None:
@@ -115,7 +115,9 @@ def book(i: int, *args) -> None:
     driver.save_screenshot(f"screenshots/{str(i)}.{str(datetime.datetime.now())}.png")
 
     sleep(i * 3)
-    book_court2()
+
+    # book_court2()
+    book_court1()
     # View selected timeslots 
     driver.save_screenshot(f"screenshots/{str(i)}.{str(datetime.datetime.now())}.png")
 
