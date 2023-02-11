@@ -7,6 +7,9 @@ import schedule
 from dotenv import load_dotenv
 from selenium import webdriver
 from selenium.webdriver.common.by import By
+from selenium.webdriver.support.ui import WebDriverWait
+from selenium.webdriver.support import expected_conditions as EC
+
 
 
 load_dotenv()
@@ -25,7 +28,7 @@ chrome_options.add_argument("--no-sandbox")
 chrome_options.add_argument("--window-size=1920,1080")  # Ensure no mobile version
 chrome_options.add_argument("--disable-dev-shm-usage")
 driver = webdriver.Chrome(options=chrome_options)
-driver.implicitly_wait(10)  # 10 seconds upper limit for page to load relevant elements
+driver.implicitly_wait(30)
 # set xvfb display since there is no GUI in docker container.
 # display = Display(visible=0, size=(800, 600))
 # display.start()
@@ -39,7 +42,7 @@ def find_next_future_thursday() -> str:
         date = future_date + datetime.timedelta(days=i)
         if date.isoweekday() == 4:
             # return date.strftime("%Y-%m-%d")
-            return "2023-02-24"  # TODO: REMOVE
+            return "2023-02-26"  # TODO: REMOVE
     raise ValueError("Couldn't find a future Thursday. Please contact Tobias")
 
 
@@ -82,25 +85,28 @@ def login(*args) -> None:
 
 
 def book_court1() -> None:
-    court1_18_19 = "/html/body/div[1]/div[3]/section[2]/div[2]/div/div[1]/div[2]/div/div/div[2]/table/tbody/tr[2]/td[2]/table/tbody/tr/td[13]"
-    court1_19_20 = "/html/body/div[1]/div[3]/section[2]/div[2]/div/div[1]/div[2]/div/div/div[2]/table/tbody/tr[2]/td[2]/table/tbody/tr/td[14]"
+    xpath = "/html/body/div[1]/div[3]/section[2]/div[2]/div/div[1]/div[2]/div/div/div[2]/table/tbody/tr[2]/td[2]/table/tbody/tr/td[{row}]"
+    court1_18 = xpath.format(row=13)
+    court1_19 = xpath.format(row=14)
 
-    for court_hour in [court1_19_20]:
+    for court_hour in [court1_19]:
         court_hour_box = driver.find_element(By.XPATH, court_hour)
         court_hour_box.click()
 
 
 def book_court2() -> None:
-    court2_18_19 = "/html/body/div[1]/div[3]/section[2]/div[2]/div/div[1]/div[2]/div/div/div[2]/table/tbody/tr[3]/td[2]/table/tbody/tr/td[13]"
-    court2_19_20 = "/html/body/div[1]/div[3]/section[2]/div[2]/div/div[1]/div[2]/div/div/div[2]/table/tbody/tr[3]/td[2]/table/tbody/tr/td[14]"
+    xpath = "/html/body/div[1]/div[3]/section[2]/div[2]/div/div[1]/div[2]/div/div/div[2]/table/tbody/tr[3]/td[2]/table/tbody/tr/td[{row}]"
+    court2_18 = xpath.format(row=13)
+    court2_19 = xpath.format(row=14)
 
-    for court_hour in [court2_18_19, court2_19_20]:
+    for court_hour in [court2_18]:
         court_hour_box = driver.find_element(By.XPATH, court_hour)
         court_hour_box.click()
 
 
 @retry
-def book(i: int, *args) -> None:
+def book(*args) -> None:
+    i = args[0]
     date = find_next_future_thursday()
     url = URL_TEMPLATE.format(date=date, sport=SPORT)
 
@@ -116,9 +122,10 @@ def book(i: int, *args) -> None:
 
     sleep(i * 3)
 
-    # book_court2()
-    book_court1()
-    # View selected timeslots 
+    book_court2()
+    # book_court1()  # Pop-up interfere with book button (cannot be found because of it)
+
+    # View selected timeslots
     driver.save_screenshot(f"screenshots/{str(i)}.{str(datetime.datetime.now())}.png")
 
     book_box = driver.find_element(
@@ -127,15 +134,11 @@ def book(i: int, *args) -> None:
     )
     book_box.click()
     # Observe the pop-up box
-    sleep(i * 3)
+    sleep(i * 3 + 2)
     driver.save_screenshot(f"screenshots/{str(i)}.{str(datetime.datetime.now())}.png")
 
     confirm_box = driver.find_element(By.XPATH, '//*[@id="btnSubmit"]')
     confirm_box.click()
-
-    page_state = driver.execute_script("return document.readyState;")
-    if page_state == "complete":
-        print("... Trying to book. Please verify when done")
 
     sleep(30)
     driver.save_screenshot(f"screenshots/{str(i)}.{str(datetime.datetime.now())}.png")
@@ -143,7 +146,6 @@ def book(i: int, *args) -> None:
 
 
 if "__main__" == __name__:
-    # TODO: Outcomment
     date = find_next_future_thursday()
     print(f"... Book hours on {date}")
 
