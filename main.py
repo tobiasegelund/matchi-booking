@@ -47,7 +47,7 @@ def find_next_future_thursday() -> str:
 
 
 def retry(func):
-    def inner():
+    def inner(*args, **kwargs):
         for i in range(NUMBER_OF_RETRIES):
             try:
                 func(i)
