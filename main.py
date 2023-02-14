@@ -41,8 +41,8 @@ def find_next_future_thursday() -> str:
     for i in range(7):
         date = future_date + datetime.timedelta(days=i)
         if date.isoweekday() == 4:
-            # return date.strftime("%Y-%m-%d")
-            return "2023-02-28"  # TODO: REMOVE
+            return date.strftime("%Y-%m-%d")
+            # return "2023-02-28"  # TODO: REMOVE
     raise ValueError("Couldn't find a future Thursday. Please contact Tobias")
 
 
@@ -97,13 +97,13 @@ def book_court1() -> None:
 def book_court2() -> None:
     xpath = "/html/body/div[1]/div[3]/section[2]/div[2]/div/div[1]/div[2]/div/div/div[2]/table/tbody/tr[3]/td[2]/table/tbody/tr/td[{row}]"
     # court2_14 = xpath.format(row=9)
-    court2_15 = xpath.format(row=10)
+    # court2_15 = xpath.format(row=10)
     # court2_16 = xpath.format(row=11)
     # court2_17 = xpath.format(row=12)
     court2_18 = xpath.format(row=13)
     court2_19 = xpath.format(row=14)
 
-    for court_hour in [court2_15]:
+    for court_hour in [court2_18, court2_19]:
         court_hour_box = driver.find_element(By.XPATH, court_hour)
         court_hour_box.click()
 
