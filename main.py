@@ -107,8 +107,8 @@ def book_court2() -> None:
         court_hour_box = driver.find_element(By.XPATH, court_hour)
         court_hour_box.click()
 
-
-def take_screenshot() -> None:
+@retry
+def take_screenshot(*args) -> None:
     date = find_next_future_thursday()
     url = URL_TEMPLATE.format(date=date, sport=SPORT)
     driver.get(url)
