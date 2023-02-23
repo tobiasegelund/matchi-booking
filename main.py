@@ -108,6 +108,13 @@ def book_court2() -> None:
         court_hour_box.click()
 
 
+def take_screenshot() -> None:
+    date = find_next_future_thursday()
+    url = URL_TEMPLATE.format(date=date, sport=SPORT)
+    driver.get(url)
+    driver.save_screenshot(f"screenshots/{str(datetime.datetime.now())}.png")
+
+
 @retry
 def book(*args) -> None:
     i = args[0]
@@ -156,8 +163,9 @@ if "__main__" == __name__:
     # login()
     # book()
 
-    schedule.every().day.at("03:14").do(retry(login))
-    schedule.every().day.at("03:15").do(retry(book))
+    schedule.every().day.at("00:00").do(take_screenshot)
+    schedule.every().day.at("03:14").do(login)
+    schedule.every().day.at("03:15").do(book)
 
     while True:
         schedule.run_pending()
